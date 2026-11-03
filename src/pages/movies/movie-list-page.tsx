@@ -17,8 +17,8 @@ export function MovieListPage() {
 
   return (
     <>
-      <main className="movie-page">
-        <div className="page-heading"><h1>영화 목록</h1><p>지금 주목해야 할 영화들을 만나보세요.</p></div>
+      <main className="mx-auto min-h-[70vh] max-w-[1264px] px-5 py-8 sm:px-8 sm:py-13">
+        <div className="mb-8"><h1 className="text-2xl font-bold tracking-tight sm:text-[28px]">영화 목록</h1><p className="mt-2 text-sm text-[#999999]">지금 주목해야 할 영화들을 만나보세요.</p></div>
         <MovieGrid movies={movies.slice((page - 1) * pageSize, page * pageSize)} onToggleBookmark={toggleBookmark} />
         <Pagination page={page} pageCount={pageCount} onPageChange={setPage} />
       </main>
