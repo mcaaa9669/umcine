@@ -25,37 +25,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--color-primary);
 img { display: block; }
 h1, h2, p { margin: 0; }
 
-.site-header { height: 80px; border-bottom: 1px solid var(--color-border); background: var(--color-background); }
-.header-inner { max-width: var(--content-width); height: 100%; margin: auto; display: flex; align-items: center; gap: 64px; }
-.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--color-primary); font-size: 28px; font-weight: 800; letter-spacing: -1px; }
-.brand img { filter: invert(44%) sepia(86%) saturate(1697%) hue-rotate(318deg) brightness(94%) contrast(92%); }
-.header-inner nav { align-self: stretch; display: flex; }
-.header-inner nav a { display: flex; align-items: center; font-size: 15px; font-weight: 700; border-bottom: 2px solid var(--color-primary); }
-.movie-page { max-width: var(--content-width); margin: auto; padding: 52px 0 64px; min-height: calc(100vh - 250px); }
-.page-heading { margin-bottom: 32px; }
-.page-heading h1 { font-size: 28px; line-height: 1.4; letter-spacing: -1px; }
-.page-heading p { margin-top: 10px; color: var(--color-muted); font-size: 14px; }
-.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 48px; }
-.pagination button { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 6px; background: transparent; color: #dddddd; }
-.pagination button img { filter: invert(1); }
-.pagination button[aria-current='page'] { background: var(--color-primary); color: white; font-weight: 700; }
-.pagination button:disabled { opacity: .25; }
-.pagination button:not(:disabled):not([aria-current]):hover { background: var(--color-surface); }
-.site-footer { max-width: var(--content-width); margin: auto; border-top: 1px solid var(--color-border); padding: 32px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 16px 24px; color: var(--color-muted); font-size: 12px; }
-.site-footer .brand { font-size: 22px; }
-.site-footer span { margin-left: auto; }
-.site-footer > img { width: 72px; height: auto; }
-@media (max-width: 1280px) { .header-inner, .movie-page, .site-footer { margin-left: 32px; margin-right: 32px; } }
-@media (max-width: 640px) {
-  .site-header { height: 68px; }
-  .header-inner, .movie-page, .site-footer { margin-left: 20px; margin-right: 20px; }
-  .header-inner { gap: 32px; }
-  .brand { font-size: 24px; }
-  .movie-page { padding-top: 32px; }
-  .page-heading h1 { font-size: 24px; }
-  .site-footer span { margin-left: 0; }
-}
-
 /* 5주차: 회원 조회 API 연동 */
 .member-page { max-width: 1100px; }
 .member-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
@@ -74,3 +43,4 @@ h1, h2, p { margin: 0; }
 .rating-list time { color: #aaa; font-size: 13px; }
 .member-panel details { margin-top: 16px; }
 @media (max-width: 700px) { .member-checks { grid-template-columns: 1fr; gap: 0; } .member-panel form { flex-wrap: wrap; } }
+
