@@ -1,6 +1,7 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { useEffect, useState, type SubmitEvent } from 'react'
 import { movies } from '../../data/movies'
+import { BookmarkButton } from '../../components/bookmark-button'
 
 export function SearchPage() {
   const { query } = useSearch({ from: '/search' })
@@ -39,6 +40,7 @@ export function SearchPage() {
                     <span className="mt-4 inline-block text-sm font-semibold text-[#e84459]">상세 보기 →</span>
                   </div>
                 </Link>
+                <div className="pb-6"><BookmarkButton movieId={movie.id} /></div>
               </li>)}
             </ul>}
         </>}
