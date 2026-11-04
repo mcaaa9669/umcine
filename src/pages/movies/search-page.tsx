@@ -30,10 +30,10 @@ export function SearchPage() {
             <ul className="mt-6 divide-y divide-[#2c2c2c]">
               {results.map(movie => <li key={movie.id}>
                 <Link to="/movies/$movieId" params={{ movieId: String(movie.id) }} className="group flex gap-5 rounded-lg py-6 transition-colors hover:bg-[#1c1c1c] sm:gap-7">
-                  <img src={movie.posterPath} alt={`${movie.title} 포스터`} className="aspect-[2/3] w-24 self-start rounded-lg object-cover sm:w-36" />
+                  <img src={movie.posterPath} alt={`${movie.title} 포스터`} className="aspect-[2/3] w-24 shrink-0 self-start rounded-lg object-cover sm:w-36" />
                   <div className="min-w-0 py-1">
-                    <h3 className="text-lg font-bold group-hover:text-[#e84459] sm:text-xl">{movie.title}</h3>
-                    <p className="mt-1 text-sm text-[#999999]">{movie.originalTitle}</p>
+                    <h3 className="text-lg font-bold wrap-anywhere group-hover:text-[#e84459] sm:text-xl">{movie.title}</h3>
+                    <p className="mt-1 text-sm wrap-anywhere text-[#999999]">{movie.originalTitle}</p>
                     <p className="mt-3 text-xs leading-6 text-[#bbbbbb] sm:text-sm"><time dateTime={movie.releaseDate.replaceAll('.', '-')}>{movie.releaseDate}</time> · {movie.genres.join(' · ')}</p>
                     <p className="mt-3 line-clamp-3 text-sm leading-7 text-[#cccccc]">{movie.overview}</p>
                     <span className="mt-4 inline-block text-sm font-semibold text-[#e84459]">상세 보기 →</span>
