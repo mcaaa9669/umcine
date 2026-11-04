@@ -1,4 +1,3 @@
-# UMCine
 
 React + TypeScript + Vite로 구현한 영화 목록 화면입니다.
 
