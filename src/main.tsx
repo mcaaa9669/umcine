@@ -4,6 +4,10 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
+if (import.meta.env.DEV) {
+  void import("./examples/tmdb-fetch");
+}
+
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
