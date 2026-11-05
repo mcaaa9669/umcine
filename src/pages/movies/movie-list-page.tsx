@@ -51,6 +51,10 @@ export function MovieListPage() {
         </p>
       </div>
 
+      {moviesQuery.isFetching && !moviesQuery.isPending && (
+        <p role="status" className="mb-4 text-sm text-[#999999]">최신 영화 목록을 확인하고 있어요.</p>
+      )}
+
       {moviesQuery.isPending ? (
         <p role="status" className="py-20 text-center text-[#999999]">
           영화 목록을 불러오는 중이에요.

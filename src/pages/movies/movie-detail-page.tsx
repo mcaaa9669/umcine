@@ -46,7 +46,7 @@ export function MovieDetailPage() {
     : '상영 시간 정보가 없어요.';
 
   return (
-    <main className="relative isolate min-h-[70vh] overflow-hidden">
+    <main className="relative isolate min-h-[70vh] overflow-hidden" aria-busy={movieQuery.isFetching}>
       <div className="absolute inset-x-0 top-0 -z-10 h-[560px]" aria-hidden="true">
         {backdropUrl && <img className="h-full w-full object-cover" src={backdropUrl} alt="" />}
         <div className="absolute inset-0 bg-gradient-to-b from-[#111111]/50 via-[#111111]/80 to-[#111111]" />
@@ -55,6 +55,7 @@ export function MovieDetailPage() {
         <Link className="inline-block rounded text-sm hover:text-[#e84459]" to="/">
           ← 영화 목록
         </Link>
+        {movieQuery.isFetching && <p role="status" className="mt-4 text-sm text-[#bbbbbb]">최신 영화 정보를 확인하고 있어요.</p>}
         <div className="mt-8 flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
           {posterUrl ? <img className="aspect-[2/3] w-48 shrink-0 rounded-[10px] object-cover shadow-xl sm:w-64" src={posterUrl} alt={`${movie.title} 포스터`} /> : <div className="grid aspect-[2/3] w-48 shrink-0 place-items-center rounded-[10px] bg-[#1c1c1c] text-[#999999] sm:w-64">포스터가 없어요.</div>}
           <div className="max-w-2xl sm:pt-4">

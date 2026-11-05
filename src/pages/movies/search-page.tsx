@@ -66,6 +66,9 @@ export function SearchPage() {
       </form>
 
       <div aria-live="polite" aria-busy={moviesQuery.isFetching} className="mt-10">
+        {normalizedQuery && moviesQuery.isFetching && !moviesQuery.isPending && (
+          <p role="status" className="mb-4 text-sm text-[#999999]">최신 검색 결과를 확인하고 있어요.</p>
+        )}
         {!normalizedQuery ? (
           <p className="rounded-xl border border-[#2c2c2c] px-5 py-16 text-center text-[#999999]">
             검색어를 입력해 주세요.
