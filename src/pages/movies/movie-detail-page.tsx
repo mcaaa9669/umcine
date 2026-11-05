@@ -14,6 +14,7 @@ export function MovieDetailPage() {
     queryKey: ['movies', 'detail', parsedMovieId],
     queryFn: () => getMovieDetail(parsedMovieId),
     enabled: isValidMovieId,
+    staleTime: 30 * 1000,
     retry: (failureCount, error) => {
       if (isHTTPError(error) && error.response.status === 404) return false;
       return failureCount < 2;
