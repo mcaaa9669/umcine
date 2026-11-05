@@ -1,7 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { isHTTPError } from "ky";
 import { getMovieDetail } from "../../api/movies/get-movie-detail";
-import type { TmdbMovieDetail } from "../../api/movies/models";
 import { getMovieDetailErrorMessage } from "../../utils/movies/get-movie-detail-error-message";
 import { getTmdbPosterUrl, getTmdbBackdropUrl } from "../../utils/movies/tmdb-image";
 import { BookmarkButton } from "../../components/bookmark-button";
@@ -10,37 +10,20 @@ export function MovieDetailPage() {
   const { movieId } = useParams({ from: "/movies/$movieId" });
   const parsedMovieId = Number(movieId);
   const isValidMovieId = Number.isInteger(parsedMovieId) && parsedMovieId > 0;
-  // ID별로 컴포넌트를 새로 만들어 이전 영화가 잠깐 보이지 않게 해요.
-  return <MovieDetailContent key={movieId} movieId={parsedMovieId} isValidMovieId={isValidMovieId} />;
-}
-
-function MovieDetailContent({ movieId, isValidMovieId }: { movieId: number; isValidMovieId: boolean }) {
-  const [movie, setMovie] = useState<TmdbMovieDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(isValidMovieId);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    let ignore = false;
-    setMovie(null);
-    setErrorMessage(null);
-    if (!isValidMovieId) {
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
-    async function loadMovie() {
-      try {
-        const response = await getMovieDetail(movieId);
-        if (!ignore) setMovie(response);
-      } catch (error) {
-        if (!ignore) setErrorMessage(getMovieDetailErrorMessage(error));
-      } finally {
-        if (!ignore) setIsLoading(false);
-      }
-    }
-    void loadMovie();
-    return () => { ignore = true; };
-  }, [movieId, isValidMovieId]);
+  const movieQuery = useQuery({
+    queryKey: ['movies', 'detail', parsedMovieId],
+    queryFn: () => getMovieDetail(parsedMovieId),
+    enabled: isValidMovieId,
+    retry: (failureCount, error) => {
+      if (isHTTPError(error) && error.response.status === 404) return false;
+      return failureCount < 2;
+    },
+  });
+  const movie = movieQuery.data;
+  const isLoading = isValidMovieId && movieQuery.isPending;
+  const errorMessage = movieQuery.isError
+    ? getMovieDetailErrorMessage(movieQuery.error)
+    : null;
 
   if (!isValidMovieId || isLoading || errorMessage || !movie) {
     return (

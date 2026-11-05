@@ -1,7 +1,7 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { useEffect, useState, type SubmitEvent } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { searchMovies } from '../../api/movies/search-movies'
-import type { TmdbMovieListItem } from '../../api/movies/models'
 import { BookmarkButton } from '../../components/bookmark-button'
 
 export function SearchPage() {
@@ -9,50 +9,17 @@ export function SearchPage() {
   const navigate = useNavigate({ from: '/search' })
 
   const [searchText, setSearchText] = useState(query ?? '')
-  const [movies, setMovies] = useState<TmdbMovieListItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const normalizedQuery = (query ?? '').trim()
+  const moviesQuery = useQuery({
+    queryKey: ['movies', 'search', { query: normalizedQuery }],
+    queryFn: () => searchMovies({ query: normalizedQuery }),
+    enabled: normalizedQuery.length > 0,
+  })
+  const movies = moviesQuery.data?.results ?? []
 
   useEffect(() => {
     setSearchText(query ?? '')
-  }, [query])
-
-  useEffect(() => {
-    let ignore = false
-    const nextQuery = (query ?? '').trim()
-
-    setMovies([])
-    setErrorMessage(null)
-
-    if (!nextQuery) {
-      setIsLoading(false)
-      return
-    }
-
-    setIsLoading(true)
-
-    searchMovies({ query: nextQuery })
-      .then(response => {
-        if (!ignore) {
-          setMovies(response.results)
-        }
-      })
-      .catch(() => {
-        if (!ignore) {
-          setErrorMessage('검색 결과를 불러오지 못했어요.')
-        }
-      })
-      .finally(() => {
-        if (!ignore) {
-          setIsLoading(false)
-        }
-      })
-
-    return () => {
-      ignore = true
-    }
   }, [query])
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -98,18 +65,18 @@ export function SearchPage() {
         </button>
       </form>
 
-      <div aria-live="polite" aria-busy={isLoading} className="mt-10">
+      <div aria-live="polite" aria-busy={moviesQuery.isFetching} className="mt-10">
         {!normalizedQuery ? (
           <p className="rounded-xl border border-[#2c2c2c] px-5 py-16 text-center text-[#999999]">
             검색어를 입력해 주세요.
           </p>
-        ) : isLoading ? (
+        ) : moviesQuery.isPending ? (
           <p role="status" className="py-16 text-center text-[#999999]">
             검색 결과를 불러오는 중이에요.
           </p>
-        ) : errorMessage ? (
+        ) : moviesQuery.isError ? (
           <p role="alert" className="py-16 text-center text-[#e84459]">
-            {errorMessage}
+            검색 결과를 불러오지 못했어요.
           </p>
         ) : (
           <>
