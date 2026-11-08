@@ -1,7 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { isHTTPError } from "ky";
 import { getMovieDetail } from "../../api/movies/get-movie-detail";
-import type { TmdbMovieDetail } from "../../api/movies/models";
 import { getMovieDetailErrorMessage } from "../../utils/movies/get-movie-detail-error-message";
 import { getTmdbPosterUrl, getTmdbBackdropUrl } from "../../utils/movies/tmdb-image";
 import { BookmarkButton } from "../../components/bookmark-button";
@@ -10,37 +10,21 @@ export function MovieDetailPage() {
   const { movieId } = useParams({ from: "/movies/$movieId" });
   const parsedMovieId = Number(movieId);
   const isValidMovieId = Number.isInteger(parsedMovieId) && parsedMovieId > 0;
-  // ID별로 컴포넌트를 새로 만들어 이전 영화가 잠깐 보이지 않게 해요.
-  return <MovieDetailContent key={movieId} movieId={parsedMovieId} isValidMovieId={isValidMovieId} />;
-}
-
-function MovieDetailContent({ movieId, isValidMovieId }: { movieId: number; isValidMovieId: boolean }) {
-  const [movie, setMovie] = useState<TmdbMovieDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(isValidMovieId);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    let ignore = false;
-    setMovie(null);
-    setErrorMessage(null);
-    if (!isValidMovieId) {
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
-    async function loadMovie() {
-      try {
-        const response = await getMovieDetail(movieId);
-        if (!ignore) setMovie(response);
-      } catch (error) {
-        if (!ignore) setErrorMessage(getMovieDetailErrorMessage(error));
-      } finally {
-        if (!ignore) setIsLoading(false);
-      }
-    }
-    void loadMovie();
-    return () => { ignore = true; };
-  }, [movieId, isValidMovieId]);
+  const movieQuery = useQuery({
+    queryKey: ['movies', 'detail', parsedMovieId],
+    queryFn: () => getMovieDetail(parsedMovieId),
+    enabled: isValidMovieId,
+    staleTime: 30 * 1000,
+    retry: (failureCount, error) => {
+      if (isHTTPError(error) && error.response.status === 404) return false;
+      return failureCount < 2;
+    },
+  });
+  const movie = movieQuery.data;
+  const isLoading = isValidMovieId && movieQuery.isPending;
+  const errorMessage = movieQuery.isError
+    ? getMovieDetailErrorMessage(movieQuery.error)
+    : null;
 
   if (!isValidMovieId || isLoading || errorMessage || !movie) {
     return (
@@ -62,7 +46,7 @@ function MovieDetailContent({ movieId, isValidMovieId }: { movieId: number; isVa
     : '상영 시간 정보가 없어요.';
 
   return (
-    <main className="relative isolate min-h-[70vh] overflow-hidden">
+    <main className="relative isolate min-h-[70vh] overflow-hidden" aria-busy={movieQuery.isFetching}>
       <div className="absolute inset-x-0 top-0 -z-10 h-[560px]" aria-hidden="true">
         {backdropUrl && <img className="h-full w-full object-cover" src={backdropUrl} alt="" />}
         <div className="absolute inset-0 bg-gradient-to-b from-[#111111]/50 via-[#111111]/80 to-[#111111]" />
@@ -71,6 +55,7 @@ function MovieDetailContent({ movieId, isValidMovieId }: { movieId: number; isVa
         <Link className="inline-block rounded text-sm hover:text-[#e84459]" to="/">
           ← 영화 목록
         </Link>
+        {movieQuery.isFetching && <p role="status" className="mt-4 text-sm text-[#bbbbbb]">최신 영화 정보를 확인하고 있어요.</p>}
         <div className="mt-8 flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
           {posterUrl ? <img className="aspect-[2/3] w-48 shrink-0 rounded-[10px] object-cover shadow-xl sm:w-64" src={posterUrl} alt={`${movie.title} 포스터`} /> : <div className="grid aspect-[2/3] w-48 shrink-0 place-items-center rounded-[10px] bg-[#1c1c1c] text-[#999999] sm:w-64">포스터가 없어요.</div>}
           <div className="max-w-2xl sm:pt-4">
